@@ -8,12 +8,13 @@ import pygetwindow as gw
 
 # Global variables
 middle_button_clicked = False
-hotkey_file = 'hotkey.txt'  # Text file where hotkey is stored
-shikai_ressurection_file = 'shikai-resurrection.txt'  # Text file where hotkey is stored
+hotkey_file = 'hotkey.txt'
+shikai_ressurection_file = 'shikai-resurrection.txt'  
 hotkey = 'e'  # Default hotkey
-hotkey_hooked = False  # Track if hotkey is currently hooked
-action_performed = False  # Track if action has been performed
-shikai = "Zangetsu"  # Default Shikai
+hotkey_hooked = False  
+action_performed = False  
+with open(shikai_ressurection_file, 'r') as file:
+            shikai = file.read().strip()
 app_title = 'Roblox' 
 
 # Function to handle middle mouse button click events
