@@ -4,18 +4,18 @@ import time
 from pynput import mouse
 import tkinter as tk
 from tkinter import messagebox
+import pygetwindow as gw
 
 # Global variables
 middle_button_clicked = False
 hotkey_file = 'hotkey.txt'  # Text file where hotkey is stored
 shikai_ressurection_file = 'shikai-resurrection.txt'  # Text file where hotkey is stored
-
-
 hotkey = 'e'  # Default hotkey
 hotkey_hooked = False  # Track if hotkey is currently hooked
-action_performed = False  # Define action_performed globally
-with open(shikai_ressurection_file, 'r') as file:
-            shikai = file.read().strip()
+action_performed = False  # Track if action has been performed
+shikai = "Zangetsu"  # Default Shikai
+app_title = 'Roblox' 
+
 # Function to handle middle mouse button click events
 def on_click(x, y, button, pressed):
     global middle_button_clicked
@@ -35,15 +35,9 @@ def on_hotkey_down(event):
     global action_performed
     if event.name == hotkey and not action_performed:
         if middle_button_clicked:
-            pyautogui.press('/')
-            time.sleep(0.1)  # Adjust delay as needed
-            pyautogui.write('bankai')
+            execute_command('bankai')
         else:
-            pyautogui.press('/')
-            time.sleep(0.1)  # Adjust delay as needed
-            pyautogui.write(f'bloom, {shikai}')
-        time.sleep(0.1)  # Adjust delay as needed
-        keyboard.press_and_release("enter")
+            execute_command(f'bloom, {shikai}')
         action_performed = True
 
 # Function to handle hotkey release event
@@ -51,6 +45,26 @@ def on_hotkey_up(event):
     global action_performed
     if event.name == hotkey:
         action_performed = False
+
+# Function to bring the application window to the foreground
+def focus_app_window():
+    try:
+        window = gw.getWindowsWithTitle(app_title)[0]
+        window.activate()
+        time.sleep(0.1)  # Wait a bit for the window to come to focus
+    except IndexError:
+        messagebox.showerror("Window Not Found", f"Could not find a window with the title '{app_title}'.")
+
+# Function to execute command in the text field
+def execute_command(command):
+    focus_app_window()
+    keyboard.press('/')
+    keyboard.release('/')
+    time.sleep(0.01)
+    pyautogui.write(command)
+    time.sleep(0.01)
+    keyboard.press("enter")
+    keyboard.release("enter")
 
 # Function to read hotkey from text file
 def read_hotkey():
@@ -78,14 +92,11 @@ def initialize_hotkey():
 # Initialize Tkinter
 root = tk.Tk()
 root.title("Middle Button Click Status")
-root.configure(bg='#36393f')  # Discord dark theme background color
-
-# Create a label to display the middle button state
+root.configure(bg='#36393f')
 label = tk.Label(root, text="Mode : (Shikai)", font=("Arial", 12), fg='#ffffff', bg='#7289da', padx=10, pady=10)
 label.pack(pady=20)
 label2 = tk.Label(root, text=f"Current Shikai/Resurrection : {shikai}", font=("Arial", 12), fg='#ffffff', bg='#7289da', padx=10, pady=10)
-label2.pack(pady=20)
-# Create a text widget to explain functionality
+label2.pack(pady=10)
 text = tk.Text(root, height=5, width=50, wrap=tk.WORD, bg='#36393f', fg='#ffffff', font=("Arial", 10))
 text.insert(tk.END, "Click the middle mouse button to switch modes \n there are two modes bankai and shikai however if you are using resurrection you would use the shikai mode and only the shikai mode")
 text.pack(pady=10)
